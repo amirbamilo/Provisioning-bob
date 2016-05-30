@@ -1,0 +1,22 @@
+---
+
+- name: create folder in opt for composer
+  file: path=/opt/composer state=directory
+  sudo: true
+
+- name: install composer
+  shell: curl -sS https://getcomposer.org/installer | php -- --install-dir=/opt/composer creates=/opt/composer/composer.phar
+  sudo: true
+
+- name: make composer globally available
+  file: state=link path=/usr/local/bin/composer src=/opt/composer/composer.phar
+  sudo: true
+
+- name: add composer global dependencies path to PATH
+  lineinfile: dest=/home/vagrant/.bashrc line="export PATH=$PATH:/home/vagrant/.composer/vendor/bin"
+
+- name: create local .composer folder
+  file: state=directory path=~/.composer/
+
+- name: copy composer.json file
+  template: dest=~/.composer/composer.json src=composer.json

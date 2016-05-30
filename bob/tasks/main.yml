@@ -1,0 +1,21 @@
+---
+
+- name: Copy configuration files
+  template: backup=yes src={{ item }} dest=/vagrant/bob/application/vendor/configs/
+  with_items:
+    - dev.ini
+    - automatedtests.ini
+    - log.php
+  tags:
+    - bob
+
+- name: Run generate-all
+  command: php /vagrant/tools/generate_all.php creates=/vagrant/bob/autoload_classmap.php
+  tags:
+    - bob
+
+- name: Run schema-update
+  command: php /vagrant/bob/cli/index.php --env=dev --module=maintenance --controller=schema-updater
+  ignore_errors: yes
+  tags:
+    - bob

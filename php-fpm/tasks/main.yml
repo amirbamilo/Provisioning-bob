@@ -1,0 +1,57 @@
+---
+
+- name: Install packages
+  apt: name={{ item }}
+  sudo: true
+  with_items:
+    - php5-cli
+    - php5-mysqlnd
+    - php5-dev
+    - php5-fpm
+    - php5-curl
+    - php5-sqlite
+    - php-pear
+    - php5-igbinary
+  notify:
+    - restart php5-fpm
+  tags:
+    - php-fpm
+
+- name: Set default timezone
+  ini_file: dest=/etc/php5/fpm/php.ini section=Date option=date.timezone value=Europe/Lisbon
+  sudo: true
+  notify:
+    - restart php5-fpm
+  tags:
+    - php-fpm
+
+- name: Configure pool listening address
+  ini_file: dest=/etc/php5/fpm/pool.d/www.conf section=www option=listen value=127.0.0.1:9000
+  sudo: true
+  notify:
+    - restart php5-fpm
+  tags:
+    - php-fpm
+
+- name: Configure user and group
+  ini_file: dest=/etc/php5/fpm/pool.d/www.conf section=www option={{ item }} value=vagrant
+  sudo: true
+  with_items:
+    - user
+    - group
+  notify:
+    - restart php5-fpm
+  tags:
+    - php-fpm
+
+- name: Install PHP modules
+  apt: deb={{ item }}
+  with_items:
+    - /vagrant/provisioning/roles/php-fpm/files/librabbitmq1_0.5.2-aig-1_amd64.deb
+    - /vagrant/provisioning/roles/php-fpm/files/php5-amqp_1.4.0-aig-1_amd64.deb
+    - /vagrant/provisioning/roles/php-fpm/files/php5-snappy_0.0.2-aig-1_amd64.deb
+    - /vagrant/provisioning/roles/php-fpm/files/php5-memcached_2.2.0-aig-1_amd64.deb
+    - /vagrant/provisioning/roles/php-fpm/files/php5-swoole_1.7.21-aig-1_amd64.deb
+  sudo: true
+  tags:
+    - php-fpm

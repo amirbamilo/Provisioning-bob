@@ -1,0 +1,57 @@
+---
+
+- name: Install package
+  apt: name=nginx
+  sudo: true
+  tags:
+    - nginx
+
+- name: Remove default configuration
+  file: state=absent path=/etc/nginx/sites-enabled/default
+  sudo: true
+  notify:
+    - restart nginx
+  tags:
+    - nginx
+
+- name: Copy configuration file
+  copy: src={{ item }} dest=/etc/nginx/sites-available/
+  sudo: true
+  with_items:
+    - roles/nginx/templates/alice.conf
+    - roles/nginx/templates/static.conf
+    - roles/nginx/templates/images.conf
+    - roles/nginx/templates/bob.conf
+  notify:
+    - restart nginx
+  tags:
+    - nginx
+
+- name: Link configuration file
+  file: state=link path=/etc/nginx/sites-enabled/{{ item }} src=../sites-available/{{ item }} force=true
+  sudo: true
+  with_items:
+    - alice.conf
+    - static.conf
+    - images.conf
+    - bob.conf
+  notify:
+    - restart nginx
+  tags:
+    - nginx
+
+- name: Add entry to hosts file
+  lineinfile: dest=/etc/hosts line="127.0.0.1 vagrant.bob vagrant.images vagrant.static solr"
+  sudo: true
+  tags:
+    - nginx
+
+- name: Enable www-data user to run cli commands
+  lineinfile:
+    dest=/etc/passwd
+    regexp="^www\-data"
+    line="www-data:x:33:33:www-data:/var/www:/bin/bash"
+    state=present
+  sudo: true
+  tags:
+   - nginx

@@ -1,0 +1,15 @@
+#!bin/bash
+    apt-get install sudo 
+	sudo useradd vagrant -p Vagrant!! 
+    sudo export DEBIAN_FRONTEND=noninteractive
+    sudo apt-get update -y 
+    sudo apt-get upgrade -y
+    sudo apt-get install ansible -y
+    sudo apt-get install git -y
+    sudo echo '127.0.0.1              ansible_connection=local' >> /etc/ansible/hosts
+#    sudo ssh-keygen -q -f /root/.ssh/id_rsa -N ''
+#    sudo ssh-keygen -q -f /root/.ssh/id_rsa -N '' -y | sudo tee /root/.ssh/authorized_keys
+    sudo mkdir /vagrant
+    sudo chown vagrant:vagrant /vagrant 
+    cd /vagrant
+    su -c "git clone https://amirbamilo:AdminQ12@github.com/JumiaAIG/AFRAMZ/provisioning" vagrant 

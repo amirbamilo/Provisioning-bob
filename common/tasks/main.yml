@@ -1,0 +1,22 @@
+---
+
+- name: Update apt cache
+  apt: update_cache=yes
+  sudo: true
+
+- name: Install common packages
+  sudo: true
+  apt: name={{ item }}
+  with_items:
+    - curl
+    - git
+    - screen
+    - build-essential
+    - pkg-config
+    - vim
+    - htop
+    - telnet
+
+- name: Set vim syntax on
+  sudo: true
+  lineinfile: dest=/etc/vim/vimrc regexp='^"syntax.*' line='syntax on'

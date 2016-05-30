@@ -1,0 +1,11 @@
+---
+- hosts: all
+
+  roles:
+    - common
+    - nginx
+    - php-fpm
+    - composer
+    - bob
+
+
